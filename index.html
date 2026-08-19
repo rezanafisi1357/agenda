@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>سررسید دیجیتال</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<meta name="theme-color" content="#6E2A3A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سررسید">
+<style>
+  :root{
+    --paper: #FBF6EA;
+    --paper-2: #F3EBD8;
+    --ink: #2E2A22;
+    --ink-soft: #6B6252;
+    --line: #DCD0AF;
+    --wine: #6E2A3A;
+    --wine-dark: #4E1D29;
+    --brass: #A9803F;
+    --brass-light: #E4C88A;
+    --sage: #5C7A57;
+    --sage-bg: #E4EEDF;
+    --danger: #A23B2E;
+    --shadow: 0 10px 30px rgba(46,42,34,0.18);
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'Vazirmatn', Tahoma, sans-serif;
+    background: linear-gradient(180deg, #E9E2CE 0%, #DCD3B8 100%);
+    min-height:100vh;
+    color: var(--ink);
+    padding: 24px 12px 60px;
+  }
+  .book{
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--paper);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .spine{
+    position:absolute;
+    top:0; right:0; bottom:0;
+    width: 14px;
+    background: repeating-linear-gradient(180deg, var(--wine) 0 10px, var(--wine-dark) 10px 12px);
+  }
+  .ribbon{
+    position:absolute;
+    top:0; left: 28px;
+    width: 26px;
+    height: 68px;
+    background: var(--brass);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .cover-head{
+    padding: 26px 28px 20px 20px;
+    margin-right: 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-2);
+  }
+  .cover-head .eyebrow{
+    font-size: 12px;
+    color: var(--wine);
+    font-weight:600;
+    letter-spacing: 0.5px;
+    margin: 0 0 6px;
+  }
+  .date-row{
+    display:flex;
+    align-items:baseline;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .date-row h1{
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0;
+    color: var(--ink);
+  }
+  .date-row .weekday{
+    font-size: 14px;
+    color: var(--ink-soft);
+    font-weight:500;
+  }
+  .nav-arrows{
+    display:flex;
+    gap:8px;
+    margin-top: 12px;
+  }
+  .nav-arrows button{
+    flex:1;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor:pointer;
+  }
+  .nav-arrows button:hover{ background: rgba(0,0,0,0.03); }
+
+  .section{
+    padding: 20px 28px 8px 20px;
+    margin-right: 14px;
+  }
+  .section h2{
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 12px;
+    color: var(--wine);
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .section h2::before{
+    content:'';
+    width:6px; height:6px;
+    border-radius: 50%;
+    background: var(--brass);
+    display:inline-block;
+  }
+
+  .fixed-reminder{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line);
+    gap: 10px;
+  }
+  .fixed-reminder:last-child{ border-bottom:none; }
+  .fixed-reminder .label{
+    display:flex; align-items:center; gap:8px;
+    font-size: 14px;
+    font-weight:500;
+  }
+  .fixed-reminder .label .dot{
+    width:8px;height:8px;border-radius:50%;
+  }
+  .dot.sleep{ background:#4B4F7A; }
+  .dot.wake{ background:#C98B2E; }
+  .fixed-reminder input[type=time]{
+    font-family: inherit;
+    border: 1px solid var(--line);
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .switch{
+    position: relative;
+    width: 38px; height: 22px;
+    flex-shrink:0;
+  }
+  .switch input{ opacity:0; width:0; height:0; }
+  .switch .track{
+    position:absolute; inset:0;
+    background: var(--line);
+    border-radius: 999px;
+    transition: background .15s;
+    cursor:pointer;
+  }
+  .switch .track::before{
+    content:'';
+    position:absolute;
+    width:16px; height:16px;
+    left:3px; top:3px;
+    background:#fff;
+    border-radius:50%;
+    transition: transform .15s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .switch input:checked + .track{ background: var(--sage); }
+  .switch input:checked + .track::before{ transform: translateX(-16px); }
+
+  .add-task{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .add-task .row{ display:flex; gap:8px; }
+  .add-task input[type=text]{
+    flex: 1;
+    font-family: inherit;
+    border: 1px solid var(--line);
+    background:#fff;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .add-task input[type=time], .add-task select{
+    font-family: inherit;
+    border: 1px solid var(--line);
+    background:#fff;
+    border-radius: 8px;
+    padding: 8px 8px;
+    font-size: 13px;
+    width: 92px;
+  }
+  .add-task button{
+    background: var(--wine);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-family: inherit;
+    font-weight:600;
+    font-size: 14px;
+    cursor:pointer;
+  }
+  .add-task button:hover{ background: var(--wine-dark); }
+  .error-text{
+    color: var(--danger);
+    font-size: 12px;
+    display:none;
+  }
+
+  .task-list{ list-style:none; margin:0; padding:0; padding-bottom: 10px; }
+  .task-item{
+    display:flex;
+    align-items:flex-start;
+    gap: 10px;
+    padding: 10px 4px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .task-item:last-child{ border-bottom:none; }
+  .task-check{
+    width:20px; height:20px;
+    border-radius: 5px;
+    border: 1.5px solid var(--brass);
+    flex-shrink:0;
+    margin-top:2px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff;
+  }
+  .task-check.done{ background: var(--sage); border-color: var(--sage); }
+  .task-check.done::after{
+    content:'✓';
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+  }
+  .task-info{ flex:1; min-width:0; }
+  .task-title{
+    font-size: 14px;
+    font-weight:600;
+    margin:0;
+    word-break: break-word;
+  }
+  .task-title.done{ text-decoration: line-through; color: var(--ink-soft); }
+  .task-meta{
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .task-del{
+    background:none; border:none; color: var(--ink-soft);
+    cursor:pointer; font-size: 13px; padding: 4px;
+    flex-shrink:0;
+  }
+  .task-del:hover{ color: var(--danger); }
+
+  .empty{
+    text-align:center;
+    color: var(--ink-soft);
+    font-size: 13px;
+    padding: 24px 0;
+  }
+
+  .notif-bar{
+    margin: 0 28px 18px 20px;
+    background: var(--sage-bg);
+    border: 1px solid #c7dbc1;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: #3F5A3B;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .notif-bar button{
+    background: var(--sage);
+    color:#fff;
+    border:none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .foot-note{
+    text-align:center;
+    font-size:11px;
+    color: var(--ink-soft);
+    padding: 4px 20px 18px;
+  }
+  .loading{
+    text-align:center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-size:13px;
+  }
+  .alarm-overlay{
+    position: fixed;
+    inset: 0;
+    background: var(--wine-dark);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap: 18px;
+    z-index: 999;
+    text-align:center;
+    padding: 20px;
+  }
+  .alarm-overlay.show{ display:flex; }
+  .alarm-overlay .icon{
+    width: 70px; height:70px;
+    border-radius: 50%;
+    background: var(--brass-light);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 30px;
+    animation: ring 0.6s infinite;
+  }
+  @keyframes ring{
+    0%,100%{ transform: rotate(0deg); }
+    25%{ transform: rotate(-12deg); }
+    75%{ transform: rotate(12deg); }
+  }
+  .alarm-overlay h2{
+    color:#fff;
+    font-size: 20px;
+    margin:0;
+  }
+  .alarm-overlay p{
+    color: var(--brass-light);
+    font-size: 14px;
+    margin:0;
+  }
+  .alarm-overlay button{
+    background: var(--brass-light);
+    color: var(--wine-dark);
+    border:none;
+    border-radius: 999px;
+    padding: 14px 34px;
+    font-family: inherit;
+    font-weight:700;
+    font-size: 15px;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+<div class="book" id="book" style="display:none;">
+  <div class="spine"></div>
+  <div class="ribbon"></div>
+  <div class="cover-head">
+    <p class="eyebrow">سررسید دیجیتال</p>
+    <div class="date-row">
+      <h1 id="jalaliDate">—</h1>
+      <span class="weekday" id="weekday">—</span>
+    </div>
+    <div class="nav-arrows">
+      <button id="prevDay">‹ روز قبل</button>
+      <button id="todayBtn">امروز</button>
+      <button id="nextDay">روز بعد ›</button>
+    </div>
+  </div>
+
+  <div id="notifBar" class="notif-bar" style="display:none;">
+    <span>برای دریافت یادآوری، اجازه‌ی نوتیفیکیشن رو فعال کن</span>
+    <button id="enableNotif">فعال‌سازی</button>
+  </div>
+
+  <div class="section">
+    <h2>یادآوری‌های ثابت روزانه</h2>
+    <button id="testAlarmBtn" style="margin-bottom:12px; background:transparent; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-family:inherit; font-size:13px; color:var(--ink-soft); cursor:pointer;">تست صدای آلارم</button>
+    <div class="fixed-reminder">
+      <div class="label"><span class="dot sleep"></span>زمان خواب</div>
+      <input type="time" id="sleepTime" value="23:00">
+      <label class="switch"><input type="checkbox" id="sleepToggle" checked><span class="track"></span></label>
+    </div>
+    <div class="fixed-reminder">
+      <div class="label"><span class="dot wake"></span>زمان بیداری</div>
+      <input type="time" id="wakeTime" value="07:00">
+      <label class="switch"><input type="checkbox" id="wakeToggle" checked><span class="track"></span></label>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>کارهای امروز</h2>
+    <div class="add-task">
+      <div class="row">
+        <input type="text" id="taskTitle" placeholder="عنوان کار — مثلاً: تماس با مشتری">
+      </div>
+      <div class="row">
+        <input type="time" id="taskTime">
+        <select id="taskDuration">
+          <option value="15">۱۵ دقیقه</option>
+          <option value="30" selected>۳۰ دقیقه</option>
+          <option value="45">۴۵ دقیقه</option>
+          <option value="60">۱ ساعت</option>
+          <option value="90">۱.۵ ساعت</option>
+          <option value="120">۲ ساعت</option>
+        </select>
+        <button id="addTaskBtn">افزودن</button>
+      </div>
+      <span class="error-text" id="taskError">یک عنوان برای کار وارد کن</span>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+    <p class="empty" id="emptyMsg" style="display:none;">هنوز کاری برای این روز ثبت نشده</p>
+  </div>
+
+  <p class="foot-note">این صفحه رو از داخل کلود (کلود‌ روی گوشی یا مرورگر) باز کن تا کارها و تنظیماتت بین بازدیدها ذخیره بمونه.</p>
+</div>
+<div class="loading" id="loadingMsg">در حال بارگذاری سررسید…</div>
+<div class="alarm-overlay" id="alarmOverlay">
+  <div class="icon">⏰</div>
+  <h2 id="alarmLabel">وقتشه</h2>
+  <p>تا لمس نکنی، صدا قطع نمی‌شه</p>
+  <button id="alarmStop">خاموش کردن</button>
+</div>
+
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+
+(function(){
+  var STORAGE_OK = !!(window.storage && window.storage.get && window.storage.set);
+  var LS_PREFIX = 'agenda:';
+  var LS_OK = (function(){
+    try{ localStorage.setItem('__t','1'); localStorage.removeItem('__t'); return true; }
+    catch(e){ return false; }
+  })();
+  var memFallback = {};
+
+  async function storeGet(key){
+    if(STORAGE_OK){
+      try{
+        var r = await window.storage.get(key, false);
+        return r ? r.value : null;
+      }catch(e){ /* fall through */ }
+    }
+    if(LS_OK){ return localStorage.getItem(LS_PREFIX + key); }
+    return memFallback[key] !== undefined ? memFallback[key] : null;
+  }
+  async function storeSet(key, value){
+    if(STORAGE_OK){
+      try{
+        var r = await window.storage.set(key, value, false);
+        if(r) return true;
+      }catch(e){ /* fall through */ }
+    }
+    if(LS_OK){ localStorage.setItem(LS_PREFIX + key, value); return true; }
+    memFallback[key] = value;
+    return true;
+  }
+
+  function toJalali(gy, gm, gd){
+    var g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    var jy = (gy <= 1600) ? 0 : 979;
+    gy -= (gy <= 1600) ? 621 : 1600;
+    var gy2 = (gm > 2) ? (gy + 1) : gy;
+    var days = (365*gy) + (parseInt((gy2+3)/4)) - parseInt((gy2+99)/100) + parseInt((gy2+399)/400) - 80 + gd + g_d_m[gm-1];
+    jy += 33*parseInt(days/12053);
+    days %= 12053;
+    jy += 4*parseInt(days/1461);
+    days %= 1461;
+    if (days > 365){
+      jy += parseInt((days-1)/365);
+      days = (days-1)%365;
+    }
+    var jm, jd;
+    if (days < 186){
+      jm = 1 + parseInt(days/31);
+      jd = 1 + (days%31);
+    } else {
+      jm = 7 + parseInt((days-186)/30);
+      jd = 1 + ((days-186)%30);
+    }
+    return [jy, jm, jd];
+  }
+
+  var jMonths = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  var weekdays = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+  var faDigits = ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'];
+  function toFaNum(n){
+    return String(n).replace(/[0-9]/g, function(d){ return faDigits[d]; });
+  }
+
+  var currentDate = new Date();
+  currentDate.setHours(0,0,0,0);
+
+  function isoKey(d){
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function renderHeader(){
+    var j = toJalali(currentDate.getFullYear(), currentDate.getMonth()+1, currentDate.getDate());
+    document.getElementById('jalaliDate').textContent = toFaNum(j[2]) + ' ' + jMonths[j[1]-1] + ' ' + toFaNum(j[0]);
+    document.getElementById('weekday').textContent = weekdays[currentDate.getDay()];
+  }
+
+  var tasksCache = [];
+
+  async function loadTasks(){
+    var key = 'tasks:' + isoKey(currentDate);
+    var raw = await storeGet(key);
+    tasksCache = raw ? JSON.parse(raw) : [];
+    renderTasks();
+  }
+  async function saveTasks(){
+    var key = 'tasks:' + isoKey(currentDate);
+    await storeSet(key, JSON.stringify(tasksCache));
+  }
+
+  function renderTasks(){
+    var list = document.getElementById('taskList');
+    var empty = document.getElementById('emptyMsg');
+    list.innerHTML = '';
+    if(tasksCache.length === 0){
+      empty.style.display = 'block';
+      return;
+    }
+    empty.style.display = 'none';
+    var sorted = tasksCache.slice().sort(function(a,b){
+      if(!a.time) return 1;
+      if(!b.time) return -1;
+      return a.time.localeCompare(b.time);
+    });
+    sorted.forEach(function(t){
+      var li = document.createElement('li');
+      li.className = 'task-item';
+
+      var check = document.createElement('div');
+      check.className = 'task-check' + (t.done ? ' done' : '');
+      check.setAttribute('role','checkbox');
+      check.setAttribute('aria-checked', t.done ? 'true':'false');
+      check.addEventListener('click', function(){
+        t.done = !t.done;
+        saveTasks();
+        renderTasks();
+      });
+
+      var info = document.createElement('div');
+      info.className = 'task-info';
+      var title = document.createElement('p');
+      title.className = 'task-title' + (t.done ? ' done' : '');
+      title.textContent = t.title;
+      var meta = document.createElement('p');
+      meta.className = 'task-meta';
+      var metaParts = [];
+      if(t.time) metaParts.push('ساعت ' + toFaNum(t.time));
+      if(t.duration) metaParts.push(toFaNum(t.duration) + ' دقیقه');
+      meta.textContent = metaParts.join(' · ');
+      info.appendChild(title);
+      if(metaParts.length) info.appendChild(meta);
+
+      var del = document.createElement('button');
+      del.className = 'task-del';
+      del.textContent = 'حذف';
+      del.addEventListener('click', function(){
+        tasksCache = tasksCache.filter(function(x){ return x.id !== t.id; });
+        saveTasks();
+        renderTasks();
+      });
+
+      li.appendChild(check);
+      li.appendChild(info);
+      li.appendChild(del);
+      list.appendChild(li);
+    });
+  }
+
+  document.getElementById('addTaskBtn').addEventListener('click', function(){
+    var titleInput = document.getElementById('taskTitle');
+    var timeInput = document.getElementById('taskTime');
+    var durInput = document.getElementById('taskDuration');
+    var err = document.getElementById('taskError');
+    var title = titleInput.value.trim();
+    if(!title){
+      err.style.display = 'block';
+      titleInput.focus();
+      return;
+    }
+    err.style.display = 'none';
+    tasksCache.push({
+      id: Date.now() + '-' + Math.random().toString(36).slice(2,7),
+      title: title,
+      time: timeInput.value || '',
+      duration: durInput.value,
+      done: false
+    });
+    titleInput.value = '';
+    timeInput.value = '';
+    saveTasks();
+    renderTasks();
+  });
+  document.getElementById('taskTitle').addEventListener('input', function(){
+    document.getElementById('taskError').style.display = 'none';
+  });
+
+  var settings = { sleepTime:'23:00', wakeTime:'07:00', sleepOn:true, wakeOn:true };
+  async function loadSettings(){
+    var raw = await storeGet('settings');
+    if(raw){
+      try{ settings = Object.assign(settings, JSON.parse(raw)); }catch(e){}
+    }
+    document.getElementById('sleepTime').value = settings.sleepTime;
+    document.getElementById('wakeTime').value = settings.wakeTime;
+    document.getElementById('sleepToggle').checked = settings.sleepOn;
+    document.getElementById('wakeToggle').checked = settings.wakeOn;
+  }
+  async function saveSettings(){
+    await storeSet('settings', JSON.stringify(settings));
+    scheduleFixedReminders();
+  }
+  ['sleepTime','wakeTime'].forEach(function(id){
+    document.getElementById(id).addEventListener('change', function(){
+      settings[id] = this.value;
+      saveSettings();
+    });
+  });
+  document.getElementById('sleepToggle').addEventListener('change', function(){
+    settings.sleepOn = this.checked; saveSettings();
+  });
+  document.getElementById('wakeToggle').addEventListener('change', function(){
+    settings.wakeOn = this.checked; saveSettings();
+  });
+
+  document.getElementById('prevDay').addEventListener('click', function(){
+    currentDate.setDate(currentDate.getDate()-1);
+    renderHeader(); loadTasks();
+  });
+  document.getElementById('nextDay').addEventListener('click', function(){
+    currentDate.setDate(currentDate.getDate()+1);
+    renderHeader(); loadTasks();
+  });
+  document.getElementById('todayBtn').addEventListener('click', function(){
+    currentDate = new Date(); currentDate.setHours(0,0,0,0);
+    renderHeader(); loadTasks();
+  });
+
+  var timers = [];
+  function clearTimers(){ timers.forEach(clearTimeout); timers = []; }
+
+  var audioCtx = null;
+  var alarmNodes = [];
+  function startAlarmSound(){
+    try{
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      function beep(delay){
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.15;
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        var t0 = audioCtx.currentTime + delay;
+        osc.start(t0);
+        osc.stop(t0 + 0.35);
+        alarmNodes.push(osc);
+      }
+      for(var i=0;i<60;i++){ beep(i*0.6); }
+    }catch(e){}
+  }
+  function stopAlarmSound(){
+    alarmNodes.forEach(function(n){ try{ n.stop(); }catch(e){} });
+    alarmNodes = [];
+  }
+  function ringAlarm(label){
+    document.getElementById('alarmLabel').textContent = label;
+    document.getElementById('alarmOverlay').classList.add('show');
+    startAlarmSound();
+    if(navigator.vibrate) navigator.vibrate([500,300,500,300,500,300,500]);
+    if('Notification' in window && Notification.permission === 'granted'){
+      try{ new Notification('سررسید دیجیتال', { body: label }); }catch(e){}
+    }
+  }
+  document.getElementById('alarmStop').addEventListener('click', function(){
+    document.getElementById('alarmOverlay').classList.remove('show');
+    stopAlarmSound();
+    if(navigator.vibrate) navigator.vibrate(0);
+  });
+  document.getElementById('testAlarmBtn').addEventListener('click', function(){
+    ringAlarm('این یک تست بود');
+  });
+
+  function scheduleAt(hhmm, label){
+    if(!hhmm) return;
+    var parts = hhmm.split(':');
+    var target = new Date();
+    target.setHours(parseInt(parts[0]), parseInt(parts[1]), 0, 0);
+    if(target.getTime() < Date.now()) target.setDate(target.getDate()+1);
+    var ms = target.getTime() - Date.now();
+    var id = setTimeout(function(){
+      ringAlarm(label);
+    }, ms);
+    timers.push(id);
+  }
+  function scheduleFixedReminders(){
+    clearTimers();
+    if(settings.sleepOn) scheduleAt(settings.sleepTime, 'وقت خوابه');
+    if(settings.wakeOn) scheduleAt(settings.wakeTime, 'وقت بیداریه');
+    tasksCache.forEach(function(t){
+      if(t.time && !t.done) scheduleAt(t.time, t.title);
+    });
+  }
+
+  function updateNotifBar(){
+    var bar = document.getElementById('notifBar');
+    if(!('Notification' in window)){ bar.style.display='none'; return; }
+    bar.style.display = Notification.permission === 'granted' ? 'none' : 'flex';
+  }
+  document.getElementById('enableNotif').addEventListener('click', function(){
+    if(!('Notification' in window)) return;
+    Notification.requestPermission().then(function(){
+      updateNotifBar();
+      scheduleFixedReminders();
+    });
+  });
+
+  (async function init(){
+    renderHeader();
+    await loadSettings();
+    await loadTasks();
+    updateNotifBar();
+    scheduleFixedReminders();
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('book').style.display = 'block';
+  })();
+})();
+</script>
+</body>
+</html>
